@@ -495,6 +495,10 @@ namespace Utage
 			{
 				Destroy(tweenPlayer);
 			}
+			foreach (var tween in this.GetComponents<iTween>())
+			{
+				Destroy(tween);
+			}
 		}
 
 

@@ -4,9 +4,6 @@
 #endif
 
 using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 #if UTAGE_ENABLE_VIDEO
@@ -48,6 +45,8 @@ namespace Utage
 
 		int Width { get; set; }
 		int Height { get; set; }
+
+		protected AdvVideoManager VideoManager => Engine.GraphicManager.VideoManager;
 
 		//初期化処理
 		protected override void AddGraphicComponentOnInit()
@@ -103,8 +102,7 @@ namespace Utage
 			this.VideoClip = graphic.File.UnityObject as VideoClip;
 			this.VideoPlayer.clip = this.VideoClip;
 			this.VideoPlayer.isLooping = graphic.Loop;
-			float volume = Engine.SoundManager.BgmVolume * Engine.SoundManager.MasterVolume;
-			this.VideoPlayer.SetDirectAudioVolume(0, volume);
+			this.VideoPlayer.SetDirectAudioVolume(0, GetVolume());
 			this.VideoPlayer.renderMode = VideoRenderMode.RenderTexture;
 			ReleaseTexture();
 			this.RenderTexture = new RenderTexture((int)VideoClip.width, (int)VideoClip.height, 16, RenderTextureFormat.ARGB32);
@@ -134,13 +132,19 @@ namespace Utage
 			}
 		}
 
-		private void Update()
+		protected virtual void Update()
 		{
 			var player = this.VideoPlayer;
 			if (player == null || !player.isPlaying) return;
 
-			float volume = Engine.SoundManager.BgmVolume * Engine.SoundManager.MasterVolume;
-			player.SetDirectAudioVolume(0, volume);
+			player.SetDirectAudioVolume(0, GetVolume());
+		}
+		
+		//サウンド用のボリューム値を取得
+		protected virtual float GetVolume()
+		{
+			float volume = VideoManager.GetVideAudioVolume();
+			return volume;
 		}
 #else
 		public UnityEngine.Video.VideoPlayer VideoPlayer { get; } = null;

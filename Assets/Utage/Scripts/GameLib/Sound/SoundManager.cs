@@ -289,15 +289,15 @@ namespace Utage
 		}
 
 		//************ BGM ************//
-		public void PlayBgm(AudioClip clip, bool isLoop)
+		public void PlayBgm(AudioClip clip, bool isLoop, float fadeInTime = 0)
 		{
-			System.Play(IdBgm, IdBgm, new SoundData( clip, SoundPlayMode.NotPlaySame, DefaultVolume, isLoop), 0,  DefaultFadeTime );
+			System.Play(IdBgm, IdBgm, new SoundData( clip, SoundPlayMode.NotPlaySame, DefaultVolume, isLoop), fadeInTime,  DefaultFadeTime );
 		}
-		public void PlayBgm(AudioClip clip, float introTime)
+		public void PlayBgm(AudioClip clip, float introTime, float fadeInTime = 0)
 		{
 			SoundData data = new SoundData(clip, SoundPlayMode.NotPlaySame, DefaultVolume, true);
 			data.IntroTime = introTime;
-			System.Play(IdBgm, IdBgm, data, 0, DefaultFadeTime);
+			System.Play(IdBgm, IdBgm, data, fadeInTime, DefaultFadeTime);
 		}
 
 		public void PlayBgm(AssetFile file)
@@ -616,6 +616,10 @@ namespace Utage
 
 		public string SaveKey { get { return "SoundManager"; } }
 
+		//サウンドのセーブデータだけ読み込みたくないケースで使用する
+		//独自の拡張などで使用することを想定
+		public bool IgnoreReadSaveData { get; set; }
+
 		//バイナリ書き込み
 		public void OnWrite(BinaryWriter writer)
 		{
@@ -624,6 +628,8 @@ namespace Utage
 		//バイナリ読み込み
 		public void OnRead(BinaryReader reader)
 		{
+			if(IgnoreReadSaveData) return;
+			
 			System.ReadSaveDataBuffer(reader);
 		}
 	}

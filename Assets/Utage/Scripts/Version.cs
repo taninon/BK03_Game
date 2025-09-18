@@ -6,8 +6,8 @@ using System.Collections.Generic;
 namespace Utage
 {
 	/// バージョン情報
-	public class VersionUtil
+	public static class VersionUtil
 	{
-		public const string Version = "4.1.7";
+		public const string Version = "4.2.3";
 	}
 }
