@@ -24,7 +24,7 @@ public class FpsSetting : MonoBehaviour, IAdvSystemSaveDataCustom
 
 	private void Awake()
 	{
-		QualitySettings.vSyncCount =0;
+		QualitySettings.vSyncCount = 0;
 		Application.targetFrameRate = targetFrameRate;
 	}
 }

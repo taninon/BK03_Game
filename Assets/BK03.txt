@@ -1,2 +1,4 @@
 SecretKey
 BakuProject03
+
+engine.GraphicManager.CharacterManager

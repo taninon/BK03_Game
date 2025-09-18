@@ -72,9 +72,6 @@ namespace Utage
 				//その他の適用（モーション名など）
 				obj.TargetObject.SetCommandArg(this);
 			}
-
-//			Debug.Log("MousePosX"+characterInfo.Graphic.Main.RowData.ParseCell<float>("MousePosX"));
-//
 		}
 
 		bool CheckDrawCharacter( AdvEngine engine )
