@@ -1130,6 +1130,7 @@ MonoBehaviour:
   prevView: {fileID: 0}
   bgm: {fileID: 0}
   introTime: 0
+  fadeInTime: 0
   isStopBgmIfNoneBgm: 0
   onOpen:
     m_PersistentCalls:
@@ -1198,6 +1199,7 @@ MonoBehaviour:
   categoryTabPrefab: {fileID: 100000, guid: 09595b420b7f5bc48bf2f1d9b526eaf9, type: 3}
   rootItems: {fileID: 1794832745}
   gridItemPrefab: {fileID: 100000, guid: 97609fb7075815d43981d15752bbc856, type: 3}
+  keepCurrentIndexOnOpen: 0
 --- !u!1 &54531953
 GameObject:
   m_ObjectHideFlags: 0
@@ -2393,6 +2395,7 @@ MonoBehaviour:
   prevView: {fileID: 0}
   bgm: {fileID: 0}
   introTime: 0
+  fadeInTime: 0
   isStopBgmIfNoneBgm: 0
   onOpen:
     m_PersistentCalls:
@@ -2421,6 +2424,8 @@ MonoBehaviour:
   radioButtonsVoiceStopType: {fileID: 1065255993}
   tagedMasterVolumSliders: []
   dialog: {fileID: 735806397}
+  resetTabIndexOnOpen: 0
+  tabToggleGroup: {fileID: 0}
   onLoadValues:
     m_PersistentCalls:
       m_Calls: []
@@ -4207,6 +4212,7 @@ MonoBehaviour:
   prevView: {fileID: 0}
   bgm: {fileID: 0}
   introTime: 0
+  fadeInTime: 0
   isStopBgmIfNoneBgm: 0
   onOpen:
     m_PersistentCalls:
@@ -5058,6 +5064,7 @@ MonoBehaviour:
   prevView: {fileID: 0}
   bgm: {fileID: 0}
   introTime: 0
+  fadeInTime: 0
   isStopBgmIfNoneBgm: 0
   onOpen:
     m_PersistentCalls:
@@ -5537,10 +5544,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
-    y: 0.18411846
-    width: 1
-    height: 0.6317631
+    x: 0.02871409
+    y: 0
+    width: 0.9425718
+    height: 1
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -6674,6 +6681,7 @@ MonoBehaviour:
   prevView: {fileID: 0}
   bgm: {fileID: 0}
   introTime: 0
+  fadeInTime: 0
   isStopBgmIfNoneBgm: 0
   onOpen:
     m_PersistentCalls:
@@ -6716,6 +6724,7 @@ MonoBehaviour:
   categoryTabPrefab: {fileID: 100000, guid: 09595b420b7f5bc48bf2f1d9b526eaf9, type: 3}
   rootItems: {fileID: 620883970}
   gridItemPrefab: {fileID: 100002, guid: 1894eec822eb8e243a3ea0da3c710ca6, type: 3}
+  keepCurrentIndexOnOpen: 0
 --- !u!114 &349589138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7596,6 +7605,7 @@ MonoBehaviour:
   prevView: {fileID: 0}
   bgm: {fileID: 0}
   introTime: 0
+  fadeInTime: 0
   isStopBgmIfNoneBgm: 0
   onOpen:
     m_PersistentCalls:
@@ -8391,6 +8401,7 @@ MonoBehaviour:
   bootAsync: 0
   isStopSoundOnStart: 1
   isStopSoundOnEnd: 1
+  isStopSoundOnLoad: 1
   isStopVoiceOnSoundStop: 1
   isStopSeOnSoundStop: 0
   languageKeyOfParam: 
@@ -8475,6 +8486,7 @@ MonoBehaviour:
   debugOutPut: 0
   maxFilePreload: 20
   preloadDeep: 5
+  preloadDeepJumpIf: 1
   onBeginScenario:
     m_PersistentCalls:
       m_Calls: []
@@ -8568,6 +8580,7 @@ MonoBehaviour:
   enableSkipSpeedTag: 0
   autoInputOnEffectSkipped: 0
   autoBrPageOnEffectSkipped: 0
+  adjustTypeMessageWindowOnBeginPage: 1
   onBeginPage:
     m_PersistentCalls:
       m_Calls: []
@@ -8656,6 +8669,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxLog: 10
   ignoreLog: 0
+  dontClear: 0
   onAddPage:
     m_PersistentCalls:
       m_Calls: []
@@ -8716,6 +8730,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableRichTextInParamString: 0
+  autoIndentSettings:
+    indentDataList: []
 --- !u!114 &456724015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11660,6 +11676,7 @@ MonoBehaviour:
   prevView: {fileID: 0}
   bgm: {fileID: 0}
   introTime: 0
+  fadeInTime: 0
   isStopBgmIfNoneBgm: 0
   onOpen:
     m_PersistentCalls:
@@ -21182,6 +21199,7 @@ MonoBehaviour:
   isStopScroolWithAllInnner: 0
   isAutoCenteringOnRepostion: 0
   keepContentPosition: 0
+  resetContentPositionType: 0
   minArrow: {fileID: 0}
   maxArrow: {fileID: 0}
 --- !u!114 &1116645037
@@ -22255,6 +22273,7 @@ MonoBehaviour:
   prevView: {fileID: 0}
   bgm: {fileID: 0}
   introTime: 0
+  fadeInTime: 0
   isStopBgmIfNoneBgm: 0
   onOpen:
     m_PersistentCalls:
@@ -23359,6 +23378,7 @@ MonoBehaviour:
   isStopScroolWithAllInnner: 1
   isAutoCenteringOnRepostion: 0
   keepContentPosition: 0
+  resetContentPositionType: 0
   minArrow: {fileID: 0}
   maxArrow: {fileID: 0}
 --- !u!114 &1296615356
@@ -28347,10 +28367,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
-    y: 0.18411846
-    width: 1
-    height: 0.6317631
+    x: 0.02871409
+    y: 0
+    width: 0.9425718
+    height: 1
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -30296,6 +30316,7 @@ MonoBehaviour:
   prevView: {fileID: 0}
   bgm: {fileID: 0}
   introTime: 0
+  fadeInTime: 0
   isStopBgmIfNoneBgm: 0
   onOpen:
     m_PersistentCalls:
@@ -31075,6 +31096,7 @@ MonoBehaviour:
   prevView: {fileID: 0}
   bgm: {fileID: 0}
   introTime: 0
+  fadeInTime: 0
   isStopBgmIfNoneBgm: 0
   onOpen:
     m_PersistentCalls:
@@ -31087,6 +31109,7 @@ MonoBehaviour:
   config: {fileID: 117901427}
   load: {fileID: 382316709}
   gallery: {fileID: 1199967548}
+  resetTabIndexOnOpenGallery: 0
   download: {fileID: 0}
   downloadButton: {fileID: 0}
 --- !u!1 &1735456410
@@ -31619,6 +31642,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f1dd44656329564d81a376383c6d644, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useAudioListenerVolume: 0
 --- !u!1 &1772792788
 GameObject:
   m_ObjectHideFlags: 0
@@ -32875,6 +32899,7 @@ MonoBehaviour:
   prevView: {fileID: 0}
   bgm: {fileID: 0}
   introTime: 0
+  fadeInTime: 0
   isStopBgmIfNoneBgm: 0
   onOpen:
     m_PersistentCalls:
