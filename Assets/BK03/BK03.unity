@@ -5544,10 +5544,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.02871409
-    y: 0
-    width: 0.9425718
-    height: 1
+    x: 0
+    y: 0.07114361
+    width: 1
+    height: 0.85771275
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -8811,6 +8811,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcee9ad9f19ee404e990549bd600ad4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fukidashiWindow: {fileID: 217677778}
 --- !u!1 &462686638
 GameObject:
   m_ObjectHideFlags: 0
@@ -28367,10 +28368,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.02871409
-    y: 0
-    width: 0.9425718
-    height: 1
+    x: 0
+    y: 0.07114361
+    width: 1
+    height: 0.85771275
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60

@@ -14,7 +14,7 @@ public class AdvCommandTextCustom : AdvCommandText
     public override void DoCommand(AdvEngine engine)
     {
         base.DoCommand(engine);
-
+        
         //吹き出しの場合の処理
         if(engine.MessageWindowManager.CurrentWindow.Name == "Fukidashi")
         {
@@ -35,8 +35,5 @@ public class AdvCommandTextCustom : AdvCommandText
         }
     }
 
-    private void SetFukidashi(AdvEngine engine){
 
-
-    }
 }

@@ -6,6 +6,8 @@ namespace Utage
 {
     public class CustomCommandManager : AdvCustomCommandManager
     {
+        [SerializeField] AdvUguiFukidashiMessageWindow fukidashiWindow;
+
         public override void OnBootInit()
         {
             Utage.AdvCommandParser.OnCreateCustomCommandFromID += CreateCustomCommand;
@@ -28,6 +30,9 @@ namespace Utage
                     break;
                 case AdvCommandParser.IdText:
                     command = new AdvCommandTextCustom(row, dataManager);
+                    break;
+                case "fukidasi":
+                    command = new AdvCommandFukidashi(row,fukidashiWindow);
                     break;
                 //新しい名前のコマンドを作る
                 case "DebugLog":
