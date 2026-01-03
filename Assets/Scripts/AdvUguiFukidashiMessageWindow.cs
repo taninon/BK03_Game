@@ -5,77 +5,93 @@ using Utage;
 using System.Linq;
 using System;
 using DG.Tweening;
+using Unity.VisualScripting;
+
 public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 {
 	public GameObject RootChildren { get { return rootChildren; } }
-	string currentCharacter;
-	string currentHorizontalOffset;
-	string currentVerticalOffset;
+
+	[SerializeField] RectTransform rootRectTrans;
+
+	[SerializeField] private RectTransform previousRootChildren;
+
+	bool isAnimation;
 
 	internal class CharacterFukidashiState
 	{
 		internal string characterLabel;
-		internal string horizontalOffset;
-		internal string verticalOffset;
-		internal float OffsetXValue;
-		internal float OffsetYValue;
+		internal string posLabel;
+		internal Vector2 rootPos;
 
-		internal CharacterFukidashiState(string characterLabel, string horizontalOffset, string verticalOffset, float OffsetXValue, float OffsetYValue)
+		internal CharacterFukidashiState(string characterLabel,string posLabel,Vector2 pos)
 		{
 			this.characterLabel = characterLabel;
-			this.horizontalOffset = horizontalOffset;
+			this.posLabel = posLabel;
+			this.rootPos = pos;
 		}
 	}
-
 
 	List<CharacterFukidashiState> characterFukidashiStates;
 
-	public void SetOffset(string characterLabel, string horizontalOffset, string verticalOffset)
+	private CharacterFukidashiState currentFukidashiState;
+
+	public void SetPosition(Vector2 pos)
 	{
-		if (characterFukidashiStates.Any(_ => _.characterLabel == characterLabel))
-		{
-			var target = characterFukidashiStates.Find(_ => _.characterLabel == characterLabel);
-
-			{
-				target.horizontalOffset = horizontalOffset;
-			}
-
-			if (!string.IsNullOrEmpty(verticalOffset))
-			{
-				target.verticalOffset = verticalOffset;
-			}
-		}
-		else
-		{
-			characterFukidashiStates.Add(new CharacterFukidashiState(characterLabel, horizontalOffset, verticalOffset, 0, 0));
-		}
-
-		currentCharacter = characterLabel;
-		currentHorizontalOffset = horizontalOffset;
-		currentVerticalOffset = verticalOffset;
+		currentFukidashiState.rootPos = pos;
+		rootRectTrans.anchoredPosition = pos;
 	}
 
-	public void DoMove(float startX, float startY)
+	private Vector2 GetCharacterPos(AdvGraphicBase targetCharacter)
+    {
+        return new Vector2(targetCharacter.gameObject.transform.position.x * 100f, targetCharacter.gameObject.transform.position.y * 100f);
+    }
+
+	private Vector2 GetPosByRowName(string rowPosName)
 	{
+		string posRaw;
+		engine.Page.CharacterInfo.Graphic.Main.RowData.TryParseCell<string>(rowPosName, out posRaw);
+		if (posRaw == null)
+		{
+			return new Vector2(0, 0);
+		}
 		
+		var pos = posRaw.Split("v");
+		return new Vector2(float.Parse(pos[0]), float.Parse(pos[1]));
 	}
+	
+	public void SetCharacter(string name,string windowPos)
+    {
+		currentFukidashiState = new CharacterFukidashiState(name,windowPos,rootRectTrans.anchoredPosition);
+    }
 
-	private float GetOffsetX()
+	public override void OnTextChanged(AdvMessageWindow window)
 	{
-		return 0;
-	}
+		base.OnTextChanged(window);
 
-	private float GetOffsetY()
+		var targetCharacter = engine.GraphicManager.CharacterManager.AllGraphics().FirstOrDefault(g => g.name == engine.Page.CharacterLabel).RenderObject;
+
+		SetPosition(GetCharacterPos(targetCharacter) + GetPosByRowName("MouthPos"));
+		DoMove(GetPosByRowName(currentFukidashiState.posLabel));
+	}
+	
+	protected override void UpdateCurrent()
+    {
+		if (isAnimation)
+		{
+			return;
+		}
+
+		base.UpdateCurrent();
+    }
+
+	public void DoMove(UnityEngine.Vector2 toPos)
 	{
-		return 0;
+		isAnimation = true;
+		rootRectTrans.DOAnchorPos(toPos, 0.3f).SetRelative().OnComplete(() =>
+        {
+			isAnimation = false;
+        });
 	}
-
-
-	public void SetOffsetValue(string characterLabel, float offsetX, float offsetY)
-	{
-
-	}
-
 
 
 }
