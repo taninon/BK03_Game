@@ -13,6 +13,9 @@ namespace Utage.RenderPipeline
 		public Camera TargetCamera => this.GetComponentCacheInParent(ref targetCamera);
 		Camera targetCamera;
 
+		public AdvEngine AdvEngine => this.GetAdvEngineCacheFindIfMissing(ref engine);
+		[SerializeField] AdvEngine engine;
+
 		AdvPostEffectVolume[] PostEffectVolumes => this.GetComponentsCacheInChildren(ref postEffectVolumes);
 		[NonSerialized] AdvPostEffectVolume[] postEffectVolumes;
 

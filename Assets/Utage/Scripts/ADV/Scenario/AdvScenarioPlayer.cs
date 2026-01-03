@@ -129,6 +129,15 @@ namespace Utage
 		[SerializeField]
 		public AdvScenarioPlayerEvent onEndLoadSaveData = new AdvScenarioPlayerEvent();
 
+		//セーブデータのロード処理が始まる前に呼ばれる（準備処理などの前）
+		public AdvScenarioPlayerEvent OnBeforeLoadSaveData => onBeforeLoadSaveData;
+		[SerializeField] AdvScenarioPlayerEvent onBeforeLoadSaveData = new ();
+
+		//セーブデータのロード処理が終わった後に呼ばれる（全て終わった後）
+		public AdvScenarioPlayerEvent OnAfterLoadSaveData => onAfterLoadSaveData;
+		[SerializeField] AdvScenarioPlayerEvent onAfterLoadSaveData = new ();
+
+
 		public AdvEngine Engine { get { return this.GetComponentCache( ref engine); } }
 		AdvEngine engine;
 
@@ -195,6 +204,7 @@ namespace Utage
 		//セーブデータを使ってシナリオを開始
 		internal IEnumerator CoStartSaveData(AdvSaveData saveData)
 		{
+			OnBeforeLoadSaveData.Invoke(this);
 			this.IsPausing = false;
 			this.IsEndScenario = false;
 			this.IsReservedEndScenario = false;
@@ -212,6 +222,7 @@ namespace Utage
 			OnBeginScenarioAfterParametersInitialized.Invoke(this);
 			//シナリオを読み込み
 			saveData.Buffer.Overrirde(this);
+			OnAfterLoadSaveData.Invoke(this);
 		}
 
 		//データのキー

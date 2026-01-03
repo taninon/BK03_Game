@@ -66,10 +66,12 @@ namespace Utage
         //指定の位置にあるリンクを取得
         public static int FindIntersectingLink(TMP_Text text, Vector3 position)
         {
-            Camera camera = text.canvas.renderMode == RenderMode.ScreenSpaceOverlay
-                ? null
-                : text.canvas.worldCamera;
-
+            Camera camera = null;
+            
+            if (text.canvas != null && text.canvas.renderMode != RenderMode.ScreenSpaceOverlay)
+            {
+                camera = text.canvas.worldCamera;
+            }
             return TMP_TextUtilities.FindIntersectingLink(text, position, camera);
         }
     }

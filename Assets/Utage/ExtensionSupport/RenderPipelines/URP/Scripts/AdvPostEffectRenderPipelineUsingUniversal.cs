@@ -124,7 +124,21 @@ namespace Utage.RenderPipeline.Urp
 		{
 			var manager = targetCamera.GetComponentInChildren<AdvCameraPostEffectManager>(true);
 			var imageEffectVolume = manager.ImageEffectVolume;
-			var volumeComponent = imageEffectVolume.SetActiveVolume( $"{command.ImageEffectType}Volume");
+			
+			//指定のエフェクトのVolumeComponentを探す
+			var effectType = command.ImageEffectType;
+			var volumeComponent = imageEffectVolume.FindVolumeController(effectType);
+			if (volumeComponent==null)
+			{
+				volumeComponent = imageEffectVolume.FindVolumeController( $"{effectType}Volume");
+			}
+			if (volumeComponent ==null)
+			{
+				Debug.LogError($"Not found ImageEffect {effectType}", this);
+			}
+			
+			//指定のエフェクトのみアクティブにする
+			imageEffectVolume.SetActiveVolume(volumeComponent);
 			return (imageEffectVolume, onComplete);
 		}
 

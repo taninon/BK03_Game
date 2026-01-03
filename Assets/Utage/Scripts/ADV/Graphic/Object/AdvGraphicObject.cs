@@ -383,6 +383,7 @@ namespace Utage
 		//ルール画像付きのフェードをスキップする
 		public void SkipRuleFade()
 		{
+			if(RenderObject==null) return;
 			RenderObject.SkipRuleFade();
 		}
 		

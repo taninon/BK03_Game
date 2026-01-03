@@ -17,6 +17,20 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 
 	bool isAnimation;
 
+	private float fukidashiYUpperLimit;
+	private float fukidashiYLowerLimit;
+    public override void OnInit(AdvMessageWindowManager windowManager)
+    {
+        base.OnInit(windowManager);
+		SetConstVariable();
+    }
+
+	private void SetConstVariable()
+	{
+		fukidashiYUpperLimit = engine.Param.GetParameterFloat("fukidashiYUpperLimit");
+		fukidashiYLowerLimit = engine.Param.GetParameterFloat("fukidashiYLowerLimit");
+	}
+
 	internal class CharacterFukidashiState
 	{
 		internal string characterLabel;
@@ -40,6 +54,14 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		currentFukidashiState.rootPos = pos;
 		rootRectTrans.anchoredPosition = pos;
 	}
+
+	private Vector2 GetAdjustPosition(Vector2 pos)
+	{
+		var returnPos = pos;
+		returnPos.y = Mathf.Clamp(pos.y,fukidashiYLowerLimit,fukidashiYUpperLimit);
+		return returnPos;
+	}
+
 
 	private Vector2 GetCharacterPos(AdvGraphicBase targetCharacter)
     {

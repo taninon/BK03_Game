@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &4
 LightmapSettings:
@@ -7004,9 +7003,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.23512554
+    y: 0.13467945
     width: 1
-    height: 0.5297489
+    height: 0.7306411
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -7689,6 +7688,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 10
@@ -10291,6 +10291,7 @@ GameObject:
   - component: {fileID: 456724028}
   - component: {fileID: 456724029}
   - component: {fileID: 456724030}
+  - component: {fileID: 456724031}
   m_Layer: 0
   m_Name: AdvEngine
   m_TagString: Untagged
@@ -10462,6 +10463,12 @@ MonoBehaviour:
   onEndLoadSaveData:
     m_PersistentCalls:
       m_Calls: []
+  onBeforeLoadSaveData:
+    m_PersistentCalls:
+      m_Calls: []
+  onAfterLoadSaveData:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &456724007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10611,6 +10618,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxLog: 10
   ignoreLog: 0
+  dontClear: 0
   onAddPage:
     m_PersistentCalls:
       m_Calls: []
@@ -10935,6 +10943,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interruptScenario: {fileID: 456724029}
   target: {fileID: 641203969}
+--- !u!114 &456724031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456724000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d076b8eb333eb843b41381ee74c5f39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  engine: {fileID: 0}
+  targets:
+  - {fileID: 1083959040}
 --- !u!1001 &460257480
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16553,9 +16576,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.23512554
+    y: 0.13467945
     width: 1
-    height: 0.5297489
+    height: 0.7306411
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -23058,6 +23081,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 5
@@ -24085,6 +24109,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -33577,9 +33602,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.23512554
+    y: 0.13467945
     width: 1
-    height: 0.5297489
+    height: 0.7306411
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -35078,6 +35103,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -37678,6 +37704,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f1dd44656329564d81a376383c6d644, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useAudioListenerVolume: 0
 --- !u!1 &1772792788
 GameObject:
   m_ObjectHideFlags: 0

@@ -829,6 +829,7 @@ namespace Utage
 			while (GraphicManager.IsLoading) yield return null;
 			while (SoundManager.IsLoading) yield return null;
 
+			//UIを開く（このタイミングで開かないとUIオブジェクト以下のAwakeが呼ばれてない可能性があって、不具合が起きる可能性がある）
 			if (UiManager != null) UiManager.Open();
 			if (label.Length > 1 && label[0] == '*')
 			{
@@ -843,6 +844,7 @@ namespace Utage
 			while (GraphicManager.IsLoading) yield return null;
 			while (SoundManager.IsLoading) yield return null;
 
+			//UIを開く（このタイミングで開かないとUIオブジェクト以下のAwakeが呼ばれてない可能性があって、不具合が起きる可能性がある）
 			if (UiManager != null) UiManager.Open();
 			yield return ScenarioPlayer.CoStartSaveData(saveData);
 		}
