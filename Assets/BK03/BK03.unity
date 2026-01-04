@@ -4223,7 +4223,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   rootRectTrans: {fileID: 1128229359}
-  previousRootChildren: {fileID: 0}
+  messageText: {fileID: 1845073151}
+  messageTextRectTrans: {fileID: 1845073150}
+  minSize: {x: 420, y: 140}
+  maxSize: {x: 980, y: 320}
 --- !u!1 &226602191
 GameObject:
   m_ObjectHideFlags: 0
@@ -5143,7 +5146,7 @@ MonoBehaviour:
   fadeTextureStream: {fileID: 1561633314}
   title: {fileID: 1733304337}
   loadWait: {fileID: 0}
-  isWaitBoot: 0
+  isWaitBoot: 1
   isWaitDownLoad: 0
   isWaitSplashScreen: 1
 --- !u!225 &266237258
@@ -5612,9 +5615,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.044181045
+    y: 0.16877846
     width: 1
-    height: 0.9116379
+    height: 0.66244304
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -8723,6 +8726,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onEndLoadSaveData:
+    m_PersistentCalls:
+      m_Calls: []
+  onBeforeLoadSaveData:
+    m_PersistentCalls:
+      m_Calls: []
+  onAfterLoadSaveData:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &456724007
@@ -22174,7 +22183,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 980, y: 320}
+  m_SizeDelta: {x: 620, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1130407073
 GameObject:
@@ -25942,7 +25951,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1383430330
 RectTransform:
   m_ObjectHideFlags: 0
@@ -25970,7 +25979,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1383430329}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -29251,9 +29260,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.044181045
+    y: 0.16877846
     width: 1
-    height: 0.9116379
+    height: 0.66244304
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -33613,8 +33622,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -3.300003}
-  m_SizeDelta: {x: -260, y: -96.6}
+  m_AnchoredPosition: {x: 0, y: -0.2999878}
+  m_SizeDelta: {x: -260, y: -102.600006}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1845073151
 MonoBehaviour:
@@ -33636,7 +33645,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u3066\u3059\u3066\u3059\u3066\u3059\u3066\u3059\u3066\u3059\u3066\u3059\u3066\u3059\u3066\u3059\u3066\u3059\u3066\u3059"
+  m_text: "\uFF11\uFF12\uFF13\uFF14\uFF15\uFF16\uFF17\uFF18\uFF19\uFF10\uFF11\uFF12\uFF13\uFF14\uFF15\uFF16\uFF17\uFF18\uFF19\uFF10\uFF11\uFF12\uFF13\uFF14\uFF15\uFF16\uFF17\uFF18\uFF19\uFF10\uFF11\uFF12\uFF13\uFF14\uFF15\uFF16\uFF17\uFF18\uFF19\uFF10\uFF11\uFF12\uFF13\uFF14\uFF15\uFF16\uFF17\uFF18\uFF19\uFF10"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f2591aac365726f458b6e5bd0bf7100c, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: e02330aba2ef824468f885573a6307a0, type: 2}
@@ -33671,7 +33680,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 4096
   m_textAlignment: 65535
   m_characterSpacing: 4
   m_wordSpacing: 0
@@ -37084,7 +37093,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2063918842
 RectTransform:
   m_ObjectHideFlags: 0

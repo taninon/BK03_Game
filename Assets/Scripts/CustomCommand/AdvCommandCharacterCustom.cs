@@ -5,33 +5,34 @@ using Utage;
 
 public class AdvCommandCharacterCustom : AdvCommandCharacter
 {
-	public AdvCommandCharacterCustom(StringGridRow row, AdvSettingDataManager dataManager)
+	AdvUguiFukidashiMessageWindow fukidashiWindow;
+	public AdvCommandCharacterCustom(StringGridRow row, AdvSettingDataManager dataManager,AdvUguiFukidashiMessageWindow fukidashiWindow)
 		: base(row, dataManager)
 	{
-
+		this.fukidashiWindow = fukidashiWindow;
 	}
 
 
 	public override void DoCommand(AdvEngine engine)
 	{
 		base.DoCommand(engine);
+		SetCharacter(engine);
+	}
 
-		IAdvMessageWindow window;
-
-		if (!engine.MessageWindowManager.UiMessageWindowManager.AllWindows.TryGetValue("Fukidashi", out window))
+	private void SetCharacter(AdvEngine engine)
+	{
+		if(fukidashiWindow == null)
 		{
-			Debug.LogError("FukidashiWindowが取得できなかった");
 			return;
 		}
 
-		var fukidashiWindow = window as AdvUguiFukidashiMessageWindow;
-		if (fukidashiWindow == null)
+		string characterName;
+		if(TryParseCell<string>(AdvColumnName.Arg1,out characterName))
 		{
-			Debug.LogError("AdvUguiFukidashiMessageWindowのキャストに失敗");
-			return;
+			string windowPos;
+			TryParseCell<string>("WindowPos",out windowPos);
+			fukidashiWindow.SetCharacter(characterName,windowPos);
 		}
-
-		fukidashiWindow.SetCharacter(ParseCell<string>(AdvColumnName.Arg1),ParseCell<string>("WindowPos"));
 	}
 
 }

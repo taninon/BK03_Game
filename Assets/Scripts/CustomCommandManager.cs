@@ -26,7 +26,7 @@ namespace Utage
                 //既存のコマンドを改造コマンドに変えたい場合は、IDで判別
                 //コメントアウトを解除すれば、テキスト表示がデバッグログ出力のみに変わる
                 case AdvCommandParser.IdCharacter:
-                    command = new AdvCommandCharacterCustom(row, dataManager);
+                    command = new AdvCommandCharacterCustom(row, dataManager,fukidashiWindow);
                     break;
                 case AdvCommandParser.IdText:
                     command = new AdvCommandTextCustom(row, dataManager);
