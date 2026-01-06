@@ -18,14 +18,17 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 	[SerializeField] RectTransform rootRectTrans;
 	[SerializeField] TextMeshProUGUI messageText;
 	[SerializeField] RectTransform messageTextRectTrans;
+	[SerializeField] PreviousFukidashi PreviousFukidashi;
 	bool isAnimation;
-
+	bool isShow = false;
 	private float fukidashiUpperYLimit;
 	private float fukidashiLowerYLimit;
 
 	[SerializeField] Vector2 minSize;
 	[SerializeField] Vector2 maxSize;
 
+	[SerializeField] Vector2 overlapOffset;
+	float characterWidth{get {return (messageText.characterSpacing / 100 * messageText.fontSize) + messageText.fontSize;}}
 
     public override void OnInit(AdvMessageWindowManager windowManager)
     {
@@ -45,19 +48,10 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		internal string characterLabel;
 		internal string windowPosLabel;
 		internal Vector2 rootPos;
-
-		internal CharacterFukidashiState(string characterLabel,string windowPosLabel,Vector2 pos)
-		{
-			this.characterLabel = characterLabel;
-			this.windowPosLabel = windowPosLabel;
-			this.rootPos = pos;
-		}
 	}
 
-	IEnumerable<CharacterFukidashiState> characterFukidashiStates;
-
-	private CharacterFukidashiState currentFukidashiState;
-	private CharacterFukidashiState beforeFukidashiState;
+	private CharacterFukidashiState currentFukidashiState = new CharacterFukidashiState();
+	private CharacterFukidashiState beforeFukidashiState = new CharacterFukidashiState();
 
 	public void SetPosition(Vector2 pos)
 	{
@@ -99,51 +93,79 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 	public void SetCharacter(string name,string windowPos)
     {
 		beforeFukidashiState = currentFukidashiState;
-		currentFukidashiState = new CharacterFukidashiState(name,windowPos,rootRectTrans.anchoredPosition);
+
+		currentFukidashiState.characterLabel = name;
+		currentFukidashiState.windowPosLabel = windowPos;
     }
 
 	private void AdjustSize(string text)
 	{
-
 		var textOffsetX = Mathf.Abs(messageTextRectTrans.offsetMin.x)+ Mathf.Abs(messageTextRectTrans.offsetMax.x);
-		var maxLineCount = (maxSize.x - textOffsetX)/messageText.fontSize;
+		var maxLineCount = (maxSize.x - textOffsetX)/ characterWidth;
 
 		if(text.Count() < maxLineCount)
 		{
-			rootRectTrans.SetWidth(Mathf.Clamp((text.Count() + 1) * messageText.fontSize + textOffsetX,minSize.x,maxSize.x));
+			rootRectTrans.SetWidth(Mathf.Clamp((text.Count() + 1) * characterWidth + textOffsetX,minSize.x,maxSize.x));
 			rootRectTrans.SetHeight(minSize.y);
 		}
 		else
 		{
 			rootRectTrans.SetWidth(maxSize.x);
 			var textOffsetY = Mathf.Abs(messageTextRectTrans.offsetMin.y) + Mathf.Abs(messageTextRectTrans.offsetMax.y);
-			var rowCount = 1 + text.Count() / Mathf.CeilToInt((maxSize.x - textOffsetX) / messageText.fontSize);
-			rootRectTrans.SetHeight(Mathf.Clamp(rowCount  * messageText.fontSize + textOffsetY,minSize.y,maxSize.y));
+			var rowCount = 2 + text.Count() / Mathf.CeilToInt((maxSize.x - textOffsetX) / characterWidth);
+			rootRectTrans.SetHeight(Mathf.Clamp(rowCount * characterWidth + textOffsetY,minSize.y,maxSize.y));
 		}
 	}
 
 	public override void OnTextChanged(AdvMessageWindow window)
-	{
-		base.OnTextChanged(window);
-		Debug.Log("Count"+GetLineCount(window.Text.OriginalText));
-		AdjustSize(window.Text.OriginalText);
-
-		if (engine.Page.CharacterLabel== null)
+    {
+		if (isShow)
 		{
-			Debug.Log("キャラクター指定なしの吹き出し指定");
-			return;
+			PreviousFukidashi.SetUsed(rootRectTrans,TextPro.TextMeshPro.text);
+		}
+		
+        base.OnTextChanged(window);
+        AdjustSize(window.Text.OriginalText);
+
+        if (engine.Page.CharacterLabel == null)
+        {
+            Debug.Log("キャラクター指定なしの吹き出し指定");
+            return;
+        }
+
+        SetDisplayAnimation();
+    }
+
+    private void SetDisplayAnimation()
+    {
+        var windowPosLabel = GetAutoWindowPosLabel(currentFukidashiState.windowPosLabel);
+		Vector2 mouthPos = GetMouthPos(windowPosLabel);
+
+        SetPosition(mouthPos);
+		var toMovePos = GetAdjustPosition(GetPosByRowLabel(windowPosLabel) + mouthPos);
+	
+		if(PreviousFukidashi.RootPosition == toMovePos)
+		{
+			toMovePos += overlapOffset;
 		}
 
-		var targetCharacter = engine.GraphicManager.CharacterManager.AllGraphics().FirstOrDefault(g => g.name == engine.Page.CharacterLabel).RenderObject;
-		var mouthPos = GetCharacterPos(targetCharacter) + GetPosByRowLabel("MouthPos");
-		var windowPosLabel = GetAutoWindowPosLabel(currentFukidashiState.windowPosLabel,targetCharacter);
+       DoMove(toMovePos);
+    }
 
-		var toMovePos = GetAdjustPosition(GetPosByRowLabel(windowPosLabel) + mouthPos); 
-		SetPosition(mouthPos);
-		DoMove(toMovePos);
+	private Vector2 GetMouthPos(string windowPosLabel)
+	{
+        if (windowPosLabel.ToLower() == "pov")
+        {
+			return new Vector2(engine.Param.GetParameterFloat("fukidashiPovMousePosX"), engine.Param.GetParameterFloat("fukidashiPovMousePosY"));
+		}
+		else
+		{
+	        var targetCharacter = engine.GraphicManager.CharacterManager.AllGraphics().FirstOrDefault(g => g.name == engine.Page.CharacterLabel).RenderObject;
+    	    return GetCharacterPos(targetCharacter) + GetPosByRowLabel("MouthPos");
+		}
 	}
 
-	private string GetAutoWindowPosLabel(string windowPosLabel,AdvGraphicBase character)
+    private string GetAutoWindowPosLabel(string windowPosLabel)
 	{
 		if(windowPosLabel == null)
 		{
@@ -170,9 +192,8 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		rootRectTrans.DOScale(Vector3.one,0.2f);
 		rootRectTrans.DOLocalMove(toPos, 0.2f).OnComplete(() =>
         {
+			isShow = true;
 			isAnimation = false;
         });
 	}
-
-
 }
