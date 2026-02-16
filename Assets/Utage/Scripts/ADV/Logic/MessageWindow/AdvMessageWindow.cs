@@ -22,6 +22,10 @@ namespace Utage
 			Name = this.MessageWindow.gameObject.name;
 			Clear();
 		}
+		public void SetText(string text)
+		{
+			this.Text = new TextData(text);
+		}
 
 		void Clear()
 		{

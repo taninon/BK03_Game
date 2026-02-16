@@ -76,7 +76,6 @@ namespace Utage
 		[SerializeField]
 		AdvMessageWindowEvent onPostChangeText = new ();
 
-
 		//ゲーム起動時の初期化
 		public virtual void OnInit(AdvMessageWindowManager windowManager)
 		{
