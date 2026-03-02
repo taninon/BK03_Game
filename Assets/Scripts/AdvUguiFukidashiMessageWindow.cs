@@ -16,7 +16,9 @@ using System.Text;
 public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 {
 	public GameObject RootChildren { get { return rootChildren; } }
-	[SerializeField] RectTransform rootRectTrans;
+
+	[SerializeField] RectTransform moveRectTrans;
+	[SerializeField] RectTransform textRectTrans;
 	[SerializeField] RectTransform fukidashiBack;
 	[SerializeField] TextMeshProUGUI messageText;
 	[SerializeField] RectTransform messageTextRectTrans;
@@ -27,7 +29,10 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 	private float fukidashiLowerYLimit;
 
 	[SerializeField] Vector2 minSize;
+	[SerializeField] Vector2 textMinSize;
 	[SerializeField] Vector2 maxSize;
+
+	[SerializeField] Vector2 fukidashiOffSet;
 
 	[SerializeField] Vector2 overlapOffset;
 	float characterWidth { get { return (messageText.characterSpacing / 100 * messageText.fontSize) + messageText.fontSize; } }
@@ -62,8 +67,9 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 	public void SetPosition(Vector2 pos)
 	{
 		currentFukidashiState.rootPos = GetAdjustPosition(pos);
-		rootRectTrans.anchoredPosition = currentFukidashiState.rootPos;
-		fukidashiBack.anchoredPosition = currentFukidashiState.rootPos;
+		moveRectTrans.anchoredPosition = currentFukidashiState.rootPos;
+//		textRectTrans.anchoredPosition = cu	rrentFukidashiState.rootPos;
+//		fukidashiBack.anchoredPosition = currentFukidashiState.rootPos;
 
 	}
 
@@ -99,30 +105,37 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		currentFukidashiState.characterLabel = name;
 		currentFukidashiState.windowPosLabel = windowPos;
 	}
-	private void AdjustSize(int width, int rowCount,RectTransform targetRect)
+	private void AdjustSize(int width, int rowCount,RectTransform targetRect,Vector2 min,Vector2 max)
 	{
-		var textOffsetX = Mathf.Abs(messageTextRectTrans.offsetMin.x) + Mathf.Abs(messageTextRectTrans.offsetMax.x);
-		var setWidth = Mathf.Clamp((width + 1) * characterWidth + textOffsetX, minSize.x, maxSize.x);
+//		var textOffsetX = Mathf.Abs(messageTextRectTrans.offsetMin.x) + Mathf.Abs(messageTextRectTrans.offsetMax.x);
+		var textOffsetX = fukidashiOffSet.x * 2;
+		var setWidth = Mathf.Clamp((width + 1) * characterWidth+ textOffsetX, min.x, max.x);
 
 		if(setWidth > targetRect.GetWith()){
 			targetRect.SetWidth(setWidth);
 		}
 
-		var textOffsetY = Mathf.Abs(messageTextRectTrans.offsetMin.y) + Mathf.Abs(messageTextRectTrans.offsetMax.y);
-		targetRect.SetHeight(Mathf.Clamp(rowCount * characterWidth * 1.5f + textOffsetY, minSize.y, maxSize.y));
+//		var textOffsetY = Mathf.Abs(messageTextRectTrans.offsetMin.y) + Mathf.Abs(messageTextRectTrans.offsetMax.y);
+		var textOffsetY = fukidashiOffSet.y * 2;
+		targetRect.SetHeight(Mathf.Clamp(rowCount * characterWidth * 1.5f + textOffsetY, min.y, max.y));
 
 	}
 
+	private void AdjustTextSize(string text){
+		int rowCount = GetLineCount(text);
+		textRectTrans.SetWidth(1080);
+		textRectTrans.SetHeight(Mathf.Clamp(rowCount * characterWidth * 1.5f, textMinSize.y, maxSize.y));
+	}
 
-	private void AdjustSize(string text,RectTransform targetRect)
+	private void AdjustSize(string text,RectTransform targetRect,Vector2 min,Vector2 max)
 	{
 		int rowCount = GetLineCount(text);
 
 		var textOffsetX = Mathf.Abs(messageTextRectTrans.offsetMin.x) + Mathf.Abs(messageTextRectTrans.offsetMax.x);
-		targetRect.SetWidth(Mathf.Clamp((GetlongestLengthCount(text) + 1) * characterWidth + textOffsetX, minSize.x, maxSize.x));
+		targetRect.SetWidth(Mathf.Clamp((GetlongestLengthCount(text) + 1) * characterWidth + textOffsetX, min.x, max.x));
 
 		var textOffsetY = Mathf.Abs(messageTextRectTrans.offsetMin.y) + Mathf.Abs(messageTextRectTrans.offsetMax.y);
-		targetRect.SetHeight(Mathf.Clamp(rowCount * characterWidth * 1.5f + textOffsetY, minSize.y, maxSize.y));
+		targetRect.SetHeight(Mathf.Clamp(rowCount * characterWidth * 1.5f + textOffsetY, min.y, max.y));
 
 		/*
 				if (rowCount == 1)
@@ -154,6 +167,7 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		var lines = s.Split('\n');
 		return lines.OrderByDescending(x => x.Length).First().Length;
 	}
+
 
 	private (int, int) GetCurrentLineCount(string text, int nowWidth)
 	{
@@ -195,8 +209,9 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		base.OnTextChanged(window);
 		currentTextLength = -1;
 
-		AdjustSize(window.Text.NoneMetaString,rootRectTrans);
-		AdjustSize("　",fukidashiBack);
+		AdjustTextSize(window.Text.NoneMetaString);
+	//	AdjustSize(window.Text.NoneMetaString,textRectTrans,textMinSize,maxSize);
+		AdjustSize("　",fukidashiBack,minSize,maxSize);
 		if (engine.Page.CharacterLabel == null)
 		{
 			Debug.Log("キャラクター指定なしの吹き出し指定");
@@ -233,15 +248,16 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		Replace("ぇ", "<voffset=0.2em>ぇ</voffset>");
 		Replace("ぉ", "<voffset=0.2em>ぉ</voffset>");
 		Replace("っ", "<voffset=0.2em>っ</voffset>");
-		Replace("ャ", "<voffset=0.2em>ゃ</voffset>");
-		Replace("ュ", "<voffset=0.2em>ゅ</voffset>");
-		Replace("ョ", "<voffset=0.2em>ょ</voffset>");
-		Replace("ァ", "<voffset=0.2em>ぁ</voffset>");
-		Replace("ィ", "<voffset=0.2em>ぃ</voffset>");
-		Replace("ゥ", "<voffset=0.2em>ぅ</voffset>");
-		Replace("ェ", "<voffset=0.2em>ぇ</voffset>");
-		Replace("ォ", "<voffset=0.2em>ぉ</voffset>");
-		Replace("ヵ", "<voffset=0.2em>っ</voffset>");
+		Replace("ヵ", "<voffset=0.2em>ヵ</voffset>");
+		Replace("ャ", "<voffset=0.2em>ャ</voffset>");
+		Replace("ュ", "<voffset=0.2em>ュ</voffset>");
+		Replace("ョ", "<voffset=0.2em>ョ</voffset>");
+		Replace("ァ", "<voffset=0.2em>ァ</voffset>");
+		Replace("ィ", "<voffset=0.2em>ィ</voffset>");
+		Replace("ゥ", "<voffset=0.2em>ゥ</voffset>");
+		Replace("ェ", "<voffset=0.2em>ェ</voffset>");
+		Replace("ォ", "<voffset=0.2em>ォ</voffset>");
+		Replace("ッ", "<voffset=0.2em>ッ</voffset>");
 
 		return tategaki.ToString();
 	}
@@ -261,8 +277,7 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 					toMovePos += overlapOffset;
 				}
 		*/
-		DoMove(toMovePos,fukidashiBack);
-		DoMove(toMovePos,rootRectTrans);
+		DoMove(toMovePos,moveRectTrans);
 	}
 
 	private Vector2 GetMouthPos(string windowPosLabel)
@@ -304,9 +319,9 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 				currentTextLength = Engine.Page.CurrentTextLength;
 				if(Engine.Page.CurrentTextLength < _messageWindow.Text.NoneMetaString.Length)
 				{
-					Debug.Log("NowText:"+_messageWindow.Text.NoneMetaString[Engine.Page.CurrentTextLength] + " :"+Engine.Page.CurrentTextLength);
-					Debug.Log("now row:"+ GetCurrentLineCount(_messageWindow.Text.NoneMetaString,currentTextLength));
-					AdjustSize(GetCurrentLineCount(_messageWindow.Text.NoneMetaString,currentTextLength).Item1,GetCurrentLineCount(_messageWindow.Text.NoneMetaString,currentTextLength).Item2,fukidashiBack);
+		//			Debug.Log("NowText:"+_messageWindow.Text.NoneMetaString[Engine.Page.CurrentTextLength] + " :"+Engine.Page.CurrentTextLength);
+		//			Debug.Log("now row:"+ GetCurrentLineCount(_messageWindow.Text.NoneMetaString,currentTextLength));
+					AdjustSize(GetCurrentLineCount(_messageWindow.Text.NoneMetaString,currentTextLength).Item1,GetCurrentLineCount(_messageWindow.Text.NoneMetaString,currentTextLength).Item2,fukidashiBack,minSize,maxSize);
 				}
 			
 			}
@@ -325,5 +340,18 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 			isAnimation = false;
 			engine.Page.Status = AdvPage.PageStatus.SendChar;
 		});
+	}
+
+	//AdvPage OnEndTextに登録する
+	public void OnEndText()
+	{
+		//フルで表示する
+		AdjustSize(
+			GetlongestLengthCount(_messageWindow.Text.NoneMetaString),
+			_messageWindow.Text.NoneMetaString.Split('\n').Length,
+			fukidashiBack,
+			minSize,
+			maxSize
+			);
 	}
 }
