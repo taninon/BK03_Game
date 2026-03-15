@@ -22,16 +22,12 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 	[SerializeField] RectTransform fukidashiBack;
 	[SerializeField] TextMeshProUGUI messageText;
 	[SerializeField] RectTransform messageTextRectTrans;
-	[SerializeField] PreviousFukidashi PreviousFukidashi;
 	bool isAnimation;
 	bool isShow = false;
-	private float fukidashiUpperYLimit;
-	private float fukidashiLowerYLimit;
 
 	[SerializeField] Vector2 minSize;
 	[SerializeField] Vector2 textMinSize;
 	[SerializeField] Vector2 maxSize;
-
 	[SerializeField] Vector2 fukidashiOffSet;
 
 	[SerializeField] Vector2 overlapOffset;
@@ -41,6 +37,10 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 
 	AdvMessageWindow _messageWindow;
 
+	[SerializeField] FukidashiBackImage backImage;
+
+	private GameObject previous;
+	private CanvasGroup previousCanvas;
 	public override void OnInit(AdvMessageWindowManager windowManager)
 	{
 		base.OnInit(windowManager);
@@ -50,8 +50,8 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 	private async UniTaskVoid SetConstVariable()
 	{
 		await UniTask.WaitUntil(() => engine.Param.IsInit);
-		fukidashiUpperYLimit = engine.Param.GetParameterFloat("fukidashiUpperYLimit");
-		fukidashiLowerYLimit = engine.Param.GetParameterFloat("fukidashiLowerYLimit");
+		//	fukidashiUpperYLimit = engine.Param.GetParameterFloat("fukidashiUpperYLimit");
+		//	fukidashiLowerYLimit = engine.Param.GetParameterFloat("fukidashiLowerYLimit");
 	}
 
 	internal struct CharacterFukidashiState
@@ -59,6 +59,10 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		internal string characterLabel;
 		internal string windowPosLabel;
 		internal Vector2 rootPos;
+		internal string fukidashiType;
+		internal bool textWait;
+		internal bool keep;
+		internal Vector2 offSet;
 	}
 
 	private CharacterFukidashiState currentFukidashiState = new CharacterFukidashiState();
@@ -66,18 +70,8 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 
 	public void SetPosition(Vector2 pos)
 	{
-		currentFukidashiState.rootPos = GetAdjustPosition(pos);
+		currentFukidashiState.rootPos = pos;
 		moveRectTrans.anchoredPosition = currentFukidashiState.rootPos;
-//		textRectTrans.anchoredPosition = cu	rrentFukidashiState.rootPos;
-//		fukidashiBack.anchoredPosition = currentFukidashiState.rootPos;
-
-	}
-
-	private Vector2 GetAdjustPosition(Vector2 pos)
-	{
-		var returnPos = pos;
-		returnPos.y = Mathf.Clamp(pos.y, fukidashiLowerYLimit, fukidashiUpperYLimit);
-		return returnPos;
 	}
 
 	private Vector2 GetCharacterPos(AdvGraphicBase targetCharacter)
@@ -98,36 +92,41 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		return new Vector2(float.Parse(pos[0]), float.Parse(pos[1]));
 	}
 
-	public void SetCharacter(string name, string windowPos)
+
+	public void SetCustomParam(StringGridRow row)
 	{
 		beforeFukidashiState = currentFukidashiState;
 
-		currentFukidashiState.characterLabel = name;
-		currentFukidashiState.windowPosLabel = windowPos;
-	}
-	private void AdjustSize(int width, int rowCount,RectTransform targetRect,Vector2 min,Vector2 max)
-	{
-//		var textOffsetX = Mathf.Abs(messageTextRectTrans.offsetMin.x) + Mathf.Abs(messageTextRectTrans.offsetMax.x);
-		var textOffsetX = fukidashiOffSet.x * 2;
-		var setWidth = Mathf.Clamp((width + 1) * characterWidth+ textOffsetX, min.x, max.x);
+		row.TryParseCell<string>("Arg1", out currentFukidashiState.characterLabel);
+		row.TryParseCell<string>("WindowPos", out currentFukidashiState.windowPosLabel);
+		row.TryParseCell<string>("FukidashiType", out currentFukidashiState.fukidashiType);
+		currentFukidashiState.textWait = true;
 
-		if(setWidth > targetRect.GetWith()){
+		string textWait;
+
+		if (row.TryParseCell<string>("TextWait", out textWait))
+		{
+			currentFukidashiState.textWait = !(textWait.ToLower() == "off");
+		}
+	}
+
+	private void AdjustSize(int width, int rowCount, RectTransform targetRect, Vector2 min, Vector2 max)
+	{
+		var textOffsetX = fukidashiOffSet.x * 2;
+		var setWidth = Mathf.Clamp((width + 1) * characterWidth + textOffsetX, min.x, max.x);
+
+		if (setWidth > targetRect.GetWith())
+		{
 			targetRect.SetWidth(setWidth);
 		}
 
-//		var textOffsetY = Mathf.Abs(messageTextRectTrans.offsetMin.y) + Mathf.Abs(messageTextRectTrans.offsetMax.y);
 		var textOffsetY = fukidashiOffSet.y * 2;
-		targetRect.SetHeight(Mathf.Clamp(rowCount * characterWidth * 1.5f + textOffsetY, min.y, max.y));
-
+		var setHeight = Mathf.Clamp(rowCount * characterWidth * 1.5f + textOffsetY, min.y, max.y);
+		targetRect.SetHeight(setHeight);
 	}
 
-	private void AdjustTextSize(string text){
-		int rowCount = GetLineCount(text);
-		textRectTrans.SetWidth(1080);
-		textRectTrans.SetHeight(Mathf.Clamp(rowCount * characterWidth * 1.5f, textMinSize.y, maxSize.y));
-	}
 
-	private void AdjustSize(string text,RectTransform targetRect,Vector2 min,Vector2 max)
+	private void AdjustSize(string text, RectTransform targetRect, Vector2 min, Vector2 max)
 	{
 		int rowCount = GetLineCount(text);
 
@@ -168,10 +167,9 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		return lines.OrderByDescending(x => x.Length).First().Length;
 	}
 
-
 	private (int, int) GetCurrentLineCount(string text, int nowWidth)
 	{
-		if (string.IsNullOrEmpty(text)) return (0,1);
+		if (string.IsNullOrEmpty(text)) return (0, 1);
 
 		var lines = text.Split('\n');
 		int totalLines = 1;
@@ -179,118 +177,106 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 
 		foreach (var line in lines)
 		{
-			if(line.Length < currentWidth)
+			if (line.Length + 1 < currentWidth)
 			{
 				totalLines++;
 				currentWidth -= line.Length;
-			}else{
-				break;
 			}
 		}
-		return (currentWidth,totalLines);
+		return (currentWidth, totalLines);
 	}
-
-
 
 	public override void OnTextChanged(AdvMessageWindow window)
 	{
 		_messageWindow = window;
 
-		if (isShow)
+		if (previous != null)
 		{
-			///	PreviousFukidashi.SetUsed(rootRectTrans,TextPro.TextMeshPro.text);
+			previousCanvas = previous.GetComponent<CanvasGroup>();
+			previousCanvas.DOFade(0, 0.5f).OnComplete(() => Destroy(previousCanvas.gameObject));
+		}
+
+		if (currentFukidashiState.keep)
+		{
+			previous = Instantiate(moveRectTrans.gameObject, this.transform);
+			previous.transform.SetAsFirstSibling();
 		}
 
 		if (isTategaki)
 		{
-			window.SetText(TategakiModifi(window.Text.OriginalText));
+			window.SetText(TategakiUtl.Modifi(window.Text.OriginalText));
 		}
 
 		base.OnTextChanged(window);
 		currentTextLength = -1;
 
-		AdjustTextSize(window.Text.NoneMetaString);
-	//	AdjustSize(window.Text.NoneMetaString,textRectTrans,textMinSize,maxSize);
-		AdjustSize("　",fukidashiBack,minSize,maxSize);
+		//	AdjustTextSize(window.Text.NoneMetaString);
+		AdjustSize("　", fukidashiBack, minSize, maxSize);
 		if (engine.Page.CharacterLabel == null)
 		{
 			Debug.Log("キャラクター指定なしの吹き出し指定");
 			return;
 		}
-		engine.Page.Status = AdvPage.PageStatus.WaitInputInPage;
+
+
+		if (currentFukidashiState.textWait)
+		{
+			engine.Page.Status = AdvPage.PageStatus.WaitInputInPage;
+		}
+		else
+		{
+			SetFullSize();
+		}
+
 		SetDisplayAnimation();
 	}
 
-	string TategakiModifi(string text)
-	{
-		var tategaki = new StringBuilder(text);
-		tategaki.Insert(0, "<rotate=90>");
-		tategaki.Append("</rotate>");
 
-		void Replace(string inText, string replaceText)
+	private void SetFukidashiType()
+	{
+		string fukidashiType = currentFukidashiState.fukidashiType;
+		if (currentFukidashiState.fukidashiType.IsNullOrEmpty())
 		{
-			if (text.IndexOf(inText) != -1)
-			{
-				tategaki.Replace(inText, replaceText);
-			}
+			fukidashiType = "normal";
 		}
 
-		Replace("「", "<rotate=0>「</rotate>");
-		Replace("」", "<rotate=0>」</rotate>");
-		Replace("。", "<voffset=0.55em>。</voffset>");
-		Replace("、", "<voffset=0.55em>、</voffset>");
-		Replace("ゃ", "<voffset=0.2em>ゃ</voffset>");
-		Replace("ゅ", "<voffset=0.2em>ゅ</voffset>");
-		Replace("ょ", "<voffset=0.2em>ょ</voffset>");
-		Replace("ぁ", "<voffset=0.2em>ぁ</voffset>");
-		Replace("ぃ", "<voffset=0.2em>ぃ</voffset>");
-		Replace("ぅ", "<voffset=0.2em>ぅ</voffset>");
-		Replace("ぇ", "<voffset=0.2em>ぇ</voffset>");
-		Replace("ぉ", "<voffset=0.2em>ぉ</voffset>");
-		Replace("っ", "<voffset=0.2em>っ</voffset>");
-		Replace("ヵ", "<voffset=0.2em>ヵ</voffset>");
-		Replace("ャ", "<voffset=0.2em>ャ</voffset>");
-		Replace("ュ", "<voffset=0.2em>ュ</voffset>");
-		Replace("ョ", "<voffset=0.2em>ョ</voffset>");
-		Replace("ァ", "<voffset=0.2em>ァ</voffset>");
-		Replace("ィ", "<voffset=0.2em>ィ</voffset>");
-		Replace("ゥ", "<voffset=0.2em>ゥ</voffset>");
-		Replace("ェ", "<voffset=0.2em>ェ</voffset>");
-		Replace("ォ", "<voffset=0.2em>ォ</voffset>");
-		Replace("ッ", "<voffset=0.2em>ッ</voffset>");
+		SetFukidashiBack(fukidashiType);
+	}
 
-		return tategaki.ToString();
+	public void SetFukidashiBack(string type)
+	{
+		backImage.SetFukidashiType(type);
+	}
+
+	public void SetKeepFukidashi(bool value)
+	{
+		currentFukidashiState.keep = value;
 	}
 
 
 	private void SetDisplayAnimation()
 	{
 		var windowPosLabel = GetAutoWindowPosLabel(currentFukidashiState.windowPosLabel);
+		backImage.SetPosition(windowPosLabel);
 		Vector2 mouthPos = GetMouthPos(windowPosLabel);
 
-		SetPosition(mouthPos);
-		var toMovePos = GetAdjustPosition(GetPosByRowLabel(windowPosLabel) + mouthPos);
 
-		/*	
-				if(PreviousFukidashi.RootPosition == toMovePos)
-				{
-					toMovePos += overlapOffset;
-				}
-		*/
-		DoMove(toMovePos,moveRectTrans);
+		SetPosition(mouthPos);
+
+		var toMovePos = GetPosByRowLabel(windowPosLabel) + currentFukidashiState.offSet;
+
+		SetFukidashiType();
+		DoMove(toMovePos, moveRectTrans);
 	}
 
 	private Vector2 GetMouthPos(string windowPosLabel)
 	{
-		if (windowPosLabel.ToLower() == "pov")
+		var targetCharacter = engine.GraphicManager.CharacterManager.AllGraphics().FirstOrDefault(g => g.name == engine.Page.CharacterLabel);
+		if (targetCharacter == null)
 		{
-			return new Vector2(engine.Param.GetParameterFloat("fukidashiPovMousePosX"), engine.Param.GetParameterFloat("fukidashiPovMousePosY"));
+			return GetPosByRowLabel(windowPosLabel);
 		}
-		else
-		{
-			var targetCharacter = engine.GraphicManager.CharacterManager.AllGraphics().FirstOrDefault(g => g.name == engine.Page.CharacterLabel).RenderObject;
-			return GetCharacterPos(targetCharacter) + GetPosByRowLabel("MouthPos");
-		}
+		return GetCharacterPos(targetCharacter.RenderObject) + GetPosByRowLabel("MouthPos");
 	}
 
 	private string GetAutoWindowPosLabel(string windowPosLabel)
@@ -300,6 +286,11 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 			return "LeftUp";
 		}
 		return currentFukidashiState.windowPosLabel;
+	}
+
+	public void SetFukidashiRootOffset(Vector2 offset)
+	{
+		currentFukidashiState.offSet = offset;
 	}
 
 	int currentTextLength;
@@ -312,23 +303,20 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 
 		base.UpdateCurrent();
 
-		if(_messageWindow != null)
+		if (_messageWindow != null && currentFukidashiState.textWait == true)
 		{
-			if(currentTextLength < Engine.Page.CurrentTextLength)
+			if (currentTextLength < Engine.Page.CurrentTextLength)
 			{
 				currentTextLength = Engine.Page.CurrentTextLength;
-				if(Engine.Page.CurrentTextLength < _messageWindow.Text.NoneMetaString.Length)
+				if (Engine.Page.CurrentTextLength < _messageWindow.Text.NoneMetaString.Length)
 				{
-		//			Debug.Log("NowText:"+_messageWindow.Text.NoneMetaString[Engine.Page.CurrentTextLength] + " :"+Engine.Page.CurrentTextLength);
-		//			Debug.Log("now row:"+ GetCurrentLineCount(_messageWindow.Text.NoneMetaString,currentTextLength));
-					AdjustSize(GetCurrentLineCount(_messageWindow.Text.NoneMetaString,currentTextLength).Item1,GetCurrentLineCount(_messageWindow.Text.NoneMetaString,currentTextLength).Item2,fukidashiBack,minSize,maxSize);
+					AdjustSize(GetCurrentLineCount(_messageWindow.Text.NoneMetaString, currentTextLength).Item1, GetCurrentLineCount(_messageWindow.Text.NoneMetaString, currentTextLength).Item2, fukidashiBack, minSize, maxSize);
 				}
-			
 			}
 		}
 	}
 
-	public void DoMove(UnityEngine.Vector2 toPos,RectTransform targetRect)
+	public void DoMove(UnityEngine.Vector2 toPos, RectTransform targetRect)
 	{
 		isAnimation = true;
 
@@ -336,7 +324,6 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		targetRect.DOScale(Vector3.one, 0.2f);
 		targetRect.DOLocalMove(toPos, 0.2f).OnComplete(() =>
 		{
-			isShow = true;
 			isAnimation = false;
 			engine.Page.Status = AdvPage.PageStatus.SendChar;
 		});
@@ -345,7 +332,14 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 	//AdvPage OnEndTextに登録する
 	public void OnEndText()
 	{
-		//フルで表示する
+		if (_messageWindow != null)
+		{
+			SetFullSize();
+		}
+	}
+
+	private void SetFullSize()
+	{
 		AdjustSize(
 			GetlongestLengthCount(_messageWindow.Text.NoneMetaString),
 			_messageWindow.Text.NoneMetaString.Split('\n').Length,

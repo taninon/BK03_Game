@@ -31,11 +31,24 @@ namespace Utage
                 case AdvCommandParser.IdText:
                     command = new AdvCommandTextCustom(row, dataManager);
                     break;
-                case "fukidasi":
-                    command = new AdvCommandFukidashi(row,fukidashiWindow);
-                    break;
                 //新しい名前のコマンドを作る
                 case "DebugLog":
+                    break;
+            }
+
+            switch (id.ToLower())
+            {
+                  case "fukidasi":
+                    command = new AdvCommandFukidashi(row,fukidashiWindow);
+                    break;
+                case "fukidasitype":
+                    command = new AdvCommandFukidashiType(row,fukidashiWindow);
+                    break;
+                case "fukidashikeep":
+                    command = new AdvCommandKeepFukidashi(row,fukidashiWindow);
+                    break;
+                case "fukidashioffset":
+                    command = new AdvCommandFukidashiOffset(row,fukidashiWindow);
                     break;
             }
         }

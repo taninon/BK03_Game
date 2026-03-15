@@ -26,13 +26,7 @@ public class AdvCommandCharacterCustom : AdvCommandCharacter
 			return;
 		}
 
-		string characterName;
-		if(TryParseCell<string>(AdvColumnName.Arg1,out characterName))
-		{
-			string windowPos;
-			TryParseCell<string>("WindowPos",out windowPos);
-			fukidashiWindow.SetCharacter(characterName,windowPos);
-		}
+		fukidashiWindow.SetCustomParam(this.RowData);
 	}
 
 }
