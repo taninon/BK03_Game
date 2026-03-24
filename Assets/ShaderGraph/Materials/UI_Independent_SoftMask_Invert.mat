@@ -124,7 +124,7 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _MaskRect: {r: -2.5872004, g: 0.2962004, b: 1.1069996, a: -3.2791002}
+    - _MaskRect: {r: -7.891232, g: 1.0622003, b: -4.871001, a: -3.501668}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &6654985953129164978

@@ -1,17 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using Utage;
-using System.Linq;
-using System;
-using DG.Tweening;
-using Unity.VisualScripting;
-using Cysharp.Threading.Tasks;
-using MoreMountains.Feedbacks;
 using UtageExtensions;
-using TMPro;
-using MoreMountains.Tools;
-using System.Text;
 
 public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 {
@@ -38,6 +31,11 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 	AdvMessageWindow _messageWindow;
 
 	[SerializeField] FukidashiBackImage backImage;
+
+
+	private Vector2 toSize;
+
+	[SerializeField] Vector2 toSizeSpeed;
 
 	private GameObject previous;
 	private CanvasGroup previousCanvas;
@@ -110,6 +108,22 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		}
 	}
 
+	private void InitSize(int width, int rowCount, RectTransform targetRect, Vector2 min, Vector2 max)
+	{
+		var textOffsetX = fukidashiOffSet.x * 2;
+		var setWidth = Mathf.Clamp((width + 1) * characterWidth + textOffsetX, min.x, max.x);
+		targetRect.SetWidth(setWidth);
+
+
+		var textOffsetY = fukidashiOffSet.y * 2;
+		var setHeight = Mathf.Clamp(rowCount * characterWidth * 1.5f + textOffsetY, min.y, max.y);
+
+		targetRect.SetHeight(setHeight);
+		toSize.x = setWidth;
+		toSize.y = setHeight;
+
+	}
+
 	private void AdjustSize(int width, int rowCount, RectTransform targetRect, Vector2 min, Vector2 max)
 	{
 		var textOffsetX = fukidashiOffSet.x * 2;
@@ -117,13 +131,21 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 
 		if (setWidth > targetRect.GetWith())
 		{
-			targetRect.SetWidth(setWidth);
+			if (toSize.x < setWidth)
+			{
+				toSize.x = setWidth;
+			}
 		}
 
 		var textOffsetY = fukidashiOffSet.y * 2;
 		var setHeight = Mathf.Clamp(rowCount * characterWidth * 1.5f + textOffsetY, min.y, max.y);
-		targetRect.SetHeight(setHeight);
+		if (toSize.y < setHeight)
+		{
+			toSize.y = setHeight;
+		}
 	}
+
+
 
 
 	private void AdjustSize(string text, RectTransform targetRect, Vector2 min, Vector2 max)
@@ -211,7 +233,11 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		currentTextLength = -1;
 
 		//	AdjustTextSize(window.Text.NoneMetaString);
-		AdjustSize("　", fukidashiBack, minSize, maxSize);
+		//		AdjustSize("　", fukidashiBack, minSize, maxSize);
+
+
+		InitSize(1, 1, fukidashiBack, minSize, maxSize);
+
 		if (engine.Page.CharacterLabel == null)
 		{
 			Debug.Log("キャラクター指定なしの吹き出し指定");
@@ -302,6 +328,7 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		}
 
 		base.UpdateCurrent();
+		SetToSize(fukidashiBack);
 
 		if (_messageWindow != null && currentFukidashiState.textWait == true)
 		{
@@ -316,17 +343,41 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		}
 	}
 
+	private void SetToSize(RectTransform targetRect)
+	{
+		if (targetRect.GetWith() <= toSize.x)
+		{
+			targetRect.SetWidth(targetRect.GetWith() + toSizeSpeed.x * Time.deltaTime);
+		}
+
+		if (targetRect.GetHeight() <= toSize.y)
+		{
+			targetRect.SetHeight(targetRect.GetHeight() + toSizeSpeed.y * Time.deltaTime);
+		}
+	}
+
+
 	public void DoMove(UnityEngine.Vector2 toPos, RectTransform targetRect)
 	{
 		isAnimation = true;
 
 		targetRect.transform.localScale = Vector3.zero;
-		targetRect.DOScale(Vector3.one, 0.2f);
-		targetRect.DOLocalMove(toPos, 0.2f).OnComplete(() =>
-		{
-			isAnimation = false;
-			engine.Page.Status = AdvPage.PageStatus.SendChar;
-		});
+		targetRect.transform.localPosition = toPos;
+
+		targetRect.DOScale(Vector3.one, 0.2f).OnComplete(() =>
+				{
+					isAnimation = false;
+					engine.Page.Status = AdvPage.PageStatus.SendChar;
+					backImage.ShowShippo();
+				});
+
+		/*
+	targetRect.DOLocalMove(toPos, 0.2f).OnComplete(() =>
+	{
+	isAnimation = false;
+	engine.Page.Status = AdvPage.PageStatus.SendChar;
+	});
+			*/
 	}
 
 	//AdvPage OnEndTextに登録する
@@ -335,17 +386,26 @@ public class AdvUguiFukidashiMessageWindow : AdvUguiMessageWindowTMP
 		if (_messageWindow != null)
 		{
 			SetFullSize();
+
 		}
 	}
 
 	private void SetFullSize()
 	{
+		InitSize(
+			GetlongestLengthCount(_messageWindow.Text.NoneMetaString) - 1,
+			_messageWindow.Text.NoneMetaString.Split('\n').Length,
+			fukidashiBack,
+			minSize,
+			maxSize);
+
 		AdjustSize(
 			GetlongestLengthCount(_messageWindow.Text.NoneMetaString),
 			_messageWindow.Text.NoneMetaString.Split('\n').Length,
 			fukidashiBack,
 			minSize,
-			maxSize
-			);
+			maxSize);
+
+
 	}
 }

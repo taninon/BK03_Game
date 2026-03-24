@@ -106,7 +106,7 @@ Material:
     - _GlossyReflections: 0
     - _InvertMask: 1
     - _MaskBias: 0
-    - _MaskScale: 1.004
+    - _MaskScale: 1.32
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
